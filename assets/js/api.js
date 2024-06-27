@@ -12,6 +12,16 @@ function ConvertDetailToPokeClass(pokeDetail){
     pokemon.types = types
 
     pokemon.photo = pokeDetail.sprites.other.dream_world.front_default;
+    pokemon.height = pokeDetail.height;
+    pokemon.weight = pokeDetail.weight;
+    pokemon.abilities = pokeDetail.abilities.map((abilitySlot) => abilitySlot.ability.name);
+
+    const stats = pokeDetail.stats.map((statsSlot)=> statsSlot.base_stat);
+    const [hp, attack, defense] = stats;
+
+    pokemon.hp = hp;
+    pokemon.attack = attack;
+    pokemon.defense = defense;
 
    return pokemon;
 }
@@ -31,5 +41,12 @@ pokeapi.getPokemons =  (offset, limit) =>{
     .then((pokemons) => pokemons.map(pokeapi.getDetail))
     .then((detailRE)=> Promise.all(detailRE))
     .then((detailRE)=> (detailRE))
+    .catch((error) =>console.error(error))
+}
+pokeapi.getStatus=(number)=>{
+    const url = `https://pokeapi.co/api/v2/pokemon/${number}/`
+    return fetch(url)
+    .then((response) => response.json())
+    .then(ConvertDetailToPokeClass)
     .catch((error) =>console.error(error))
 }
